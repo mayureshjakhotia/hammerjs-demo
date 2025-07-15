@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hammer.js Gesture Demo</title>
+  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+  <style>
+    #gesture-area {
+      width: 100vw;
+      height: 100vh;
+      background-color: #eef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      user-select: none;
+      touch-action: none; /* Important for multi-touch */
+    }
+  </style>
+</head>
+<body>
+
+<div id="gesture-area">Try gestures here!</div>
+
+<script>
+  const area = document.getElementById('gesture-area');
+  const hammer = new Hammer.Manager(area);
+
+  // Recognizers
+  hammer.add(new Hammer.Tap({ event: 'tap' }));
+  hammer.add(new Hammer.Pan({ event: 'pan', pointers: 1, threshold: 10 }));
+  hammer.add(new Hammer.Pinch({ event: 'pinch', enable: true }));
+
+  let lastScale = 1;
+
+  // Tap
+  hammer.on('tap', () => {
+    area.textContent = 'Tap detected!';
+  });
+
+  // Pan (we'll simulate 2-finger scroll with extra pointer check)
+  area.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      area.textContent = 'Two-finger scroll (pan)';
+    }
+  });
+
+  // Pinch-to-zoom
+  hammer.on('pinch', (e) => {
+    const zoom = (e.scale * 100).toFixed(0);
+    area.textContent = `Pinch Zoom: ${zoom}%`;
+  });
+
+  // Reset text after delay
+  const resetText = () => {
+    setTimeout(() => {
+      area.textContent = 'Try gestures here!';
+    }, 1000);
+  };
+
+  hammer.on('tap pan pinch', resetText);
+</script>
+
+</body>
+</html>
